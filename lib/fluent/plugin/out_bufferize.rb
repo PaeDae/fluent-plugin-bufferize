@@ -40,7 +40,7 @@ module Fluent
           u = MessagePack::Unpacker.new(io)
           begin
             if @count > 0
-              $log.debug "Bufferize: skip first #{@count} messages" 
+              $log.debug "Bufferize: skip first #{@count} messages"
               @count.times do
                 u.skip
               end
@@ -71,7 +71,7 @@ module Fluent
           @io.close unless @io.closed?
           File.unlink(@path)
         end
-      end      
+      end
     end
 
 
@@ -86,12 +86,12 @@ module Fluent
 
       configs = conf.elements.select{|e| e.name == 'config'}
       if configs.size != 1
-        raise ConfigError, "Befferize: just one <config> directive is required"
+        raise ConfigError, "Bufferize: just one <config> directive is required"
       end
 
-      type = configs.first['type']
+      type = configs.first['type'] || configs.first['@type']
       unless type
-        raise ConfigError, "Befferize: 'type' parameter is required in <config> directive"
+        raise ConfigError, "Bufferize: '@type' parameter is required in <config> directive"
       end
 
       @output = Plugin.new_output(type)
@@ -104,8 +104,8 @@ module Fluent
     end
 
     def shutdown
-      super
       @output.shutdown
+      super
     end
 
     def format(tag, time, record)
